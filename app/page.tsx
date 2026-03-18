@@ -43,43 +43,63 @@ export default function Home() {
     setLog([]);
   };
 
-  const fight = () => {
-    if (
-      !fighter1 ||
-      !fighter2 ||
-      currentHealth1 === null ||
-      currentHealth2 === null
-    ) {
-      return;
+  const fight = async () => {
+  if (
+    !fighter1 ||
+    !fighter2 ||
+    currentHealth1 === null ||
+    currentHealth2 === null
+  ) {
+    return;
+  }
+
+  let hp1 = currentHealth1;
+  let hp2 = currentHealth2;
+
+  let attacker = fighter1;
+  let defender = fighter2;
+
+  if (fighter2.speed > fighter1.speed) {
+    attacker = fighter2;
+    defender = fighter1;
+  }
+
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
+  setLog([]);
+  setWinner(null);
+
+  while (hp1 > 0 && hp2 > 0) {
+    const damage = attacker.strength;
+
+    if (attacker.name === fighter1.name) {
+      hp2 -= damage;
+    } else {
+      hp1 -= damage;
     }
 
-    let hp1 = currentHealth1;
-    let hp2 = currentHealth2;
-    const fightLog: string[] = [];
+    setLog((prev) => [
+      ...prev,
+      `${attacker.name} attaque ${defender.name} et inflige ${damage} dégâts`,
+    ]);
 
-    let attacker = fighter1;
-    let defender = fighter2;
+    setCurrentHealth1(Math.max(0, hp1));
+    setCurrentHealth2(Math.max(0, hp2));
 
-    if (fighter2.speed > fighter1.speed) {
-      attacker = fighter2;
-      defender = fighter1;
-    }
+    if (hp1 <= 0 || hp2 <= 0) break;
 
-    let attackerHp = attacker.name === fighter1.name ? hp1 : hp2;
-    let defenderHp = defender.name === fighter1.name ? hp1 : hp2;
+    // swap attaquant/défenseur
+    const temp = attacker;
+    attacker = defender;
+    defender = temp;
 
-    while (attackerHp > 0 && defenderHp > 0) {
-      const damage = attacker.strength;
-      defenderHp -= damage;
+    await sleep(700); // vitesse du combat
+  }
 
-      fightLog.push(
-        `${attacker.name} attaque ${defender.name} avec ${attacker.weapon} et inflige ${damage} dégâts.`
-      );
-
-      if (defenderHp <= 0) {
-        fightLog.push(`${defender.name} est vaincu.`);
-        break;
-      }
+  if (hp1 <= 0) setWinner(fighter2.name);
+  else if (hp2 <= 0) setWinner(fighter1.name);
+};
 
       const tempFighter = attacker;
       attacker = defender;
