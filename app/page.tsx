@@ -30,6 +30,7 @@ export default function Home() {
   const [currentHealth2, setCurrentHealth2] = useState<number | null>(null);
   const [winner, setWinner] = useState<string | null>(null);
   const [log, setLog] = useState<string[]>([]);
+  const [isFighting, setIsFighting] = useState(false);
 
   const generateFight = () => {
     const newFighter1 = generateRandomFighter();
@@ -41,92 +42,73 @@ export default function Home() {
     setCurrentHealth2(newFighter2.health);
     setWinner(null);
     setLog([]);
+    setIsFighting(false);
   };
 
   const fight = async () => {
-  if (
-    !fighter1 ||
-    !fighter2 ||
-    currentHealth1 === null ||
-    currentHealth2 === null
-  ) {
-    return;
-  }
-
-  let hp1 = currentHealth1;
-  let hp2 = currentHealth2;
-
-  let attacker = fighter1;
-  let defender = fighter2;
-
-  if (fighter2.speed > fighter1.speed) {
-    attacker = fighter2;
-    defender = fighter1;
-  }
-
-  const sleep = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-
-  setLog([]);
-  setWinner(null);
-
-  while (hp1 > 0 && hp2 > 0) {
-    const damage = attacker.strength;
-
-    if (attacker.name === fighter1.name) {
-      hp2 -= damage;
-    } else {
-      hp1 -= damage;
+    if (
+      !fighter1 ||
+      !fighter2 ||
+      currentHealth1 === null ||
+      currentHealth2 === null ||
+      isFighting
+    ) {
+      return;
     }
 
-    setLog((prev) => [
-      ...prev,
-      `${attacker.name} attaque ${defender.name} et inflige ${damage} dégâts`,
-    ]);
+    setIsFighting(true);
+    setLog([]);
+    setWinner(null);
 
-    setCurrentHealth1(Math.max(0, hp1));
-    setCurrentHealth2(Math.max(0, hp2));
+    let hp1 = currentHealth1;
+    let hp2 = currentHealth2;
 
-    if (hp1 <= 0 || hp2 <= 0) break;
+    let attacker = fighter1;
+    let defender = fighter2;
 
-    // swap attaquant/défenseur
-    const temp = attacker;
-    attacker = defender;
-    defender = temp;
+    if (fighter2.speed > fighter1.speed) {
+      attacker = fighter2;
+      defender = fighter1;
+    }
 
-    await sleep(700); // vitesse du combat
-  }
+    const sleep = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
 
-  if (hp1 <= 0) setWinner(fighter2.name);
-  else if (hp2 <= 0) setWinner(fighter1.name);
-};
+    while (hp1 > 0 && hp2 > 0) {
+      const damage = attacker.strength;
 
-      const tempFighter = attacker;
+      if (attacker.name === fighter1.name) {
+        hp2 -= damage;
+      } else {
+        hp1 -= damage;
+      }
+
+      setLog((prev) => [
+        ...prev,
+        `${attacker.name} attaque ${defender.name} avec ${attacker.weapon} et inflige ${damage} dégâts.`,
+      ]);
+
+      setCurrentHealth1(Math.max(0, hp1));
+      setCurrentHealth2(Math.max(0, hp2));
+
+      if (hp1 <= 0 || hp2 <= 0) {
+        break;
+      }
+
+      const temp = attacker;
       attacker = defender;
-      defender = tempFighter;
+      defender = temp;
 
-      const tempHp = attackerHp;
-      attackerHp = defenderHp;
-      defenderHp = tempHp;
+      await sleep(700);
     }
-
-    if (fighter1.name === attacker.name) {
-      hp1 = attackerHp;
-      hp2 = defenderHp;
-    } else if (fighter1.name === defender.name) {
-      hp1 = defenderHp;
-      hp2 = attackerHp;
-    }
-
-    setCurrentHealth1(Math.max(0, hp1));
-    setCurrentHealth2(Math.max(0, hp2));
-    setLog(fightLog);
 
     if (hp1 <= 0) {
       setWinner(fighter2.name);
     } else if (hp2 <= 0) {
       setWinner(fighter1.name);
     }
+
+    setIsFighting(false);
   };
 
   return (
@@ -193,9 +175,10 @@ export default function Home() {
       {fighter1 && fighter2 && (
         <button
           onClick={fight}
-          className="rounded bg-red-600 px-6 py-3 font-bold"
+          disabled={isFighting}
+          className="rounded bg-red-600 px-6 py-3 font-bold disabled:opacity-50"
         >
-          ⚔️ Lancer le combat
+          {isFighting ? "Combat en cours..." : "⚔️ Lancer le combat"}
         </button>
       )}
 
