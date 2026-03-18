@@ -13,12 +13,39 @@ type Fighter = {
 const names = ["Aldric", "Borin", "Cedric", "Darian", "Edric"];
 const weapons = ["Épée", "Hache", "Lance", "Masse", "Dague"];
 
+function randomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function generateRandomFighter(): Fighter {
+  const totalPoints = 24;
+
+  let strength = 4;
+  let speed = 4;
+  let health = 24;
+
+  let remaining = totalPoints - (strength + speed + health / 2);
+
+  while (remaining > 0) {
+    const choice = randomInt(1, 3);
+
+    if (choice === 1 && strength < 8) {
+      strength += 1;
+      remaining -= 1;
+    } else if (choice === 2 && speed < 8) {
+      speed += 1;
+      remaining -= 1;
+    } else if (choice === 3 && health < 32) {
+      health += 2;
+      remaining -= 1;
+    }
+  }
+
   return {
     name: names[Math.floor(Math.random() * names.length)],
-    strength: Math.floor(Math.random() * 10) + 1,
-    speed: Math.floor(Math.random() * 10) + 1,
-    health: Math.floor(Math.random() * 20) + 20,
+    strength,
+    speed,
+    health,
     weapon: weapons[Math.floor(Math.random() * weapons.length)],
   };
 }
