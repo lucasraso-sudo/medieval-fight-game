@@ -7,6 +7,7 @@ type Fighter = {
   strength: number;
   speed: number;
   agility: number;
+  defense: number;
   health: number;
   weapon: string;
 };
@@ -19,17 +20,19 @@ function randomInt(min: number, max: number) {
 }
 
 function generateRandomFighter(): Fighter {
-  const totalPoints = 28;
+  const totalPoints = 32;
 
   let strength = 4;
   let speed = 4;
   let agility = 4;
+  let defense = 4;
   let health = 24;
 
-  let remaining = totalPoints - (strength + speed + agility + health / 2);
+  let remaining =
+    totalPoints - (strength + speed + agility + defense + health / 2);
 
   while (remaining > 0) {
-    const choice = randomInt(1, 4);
+    const choice = randomInt(1, 5);
 
     if (choice === 1 && strength < 8) {
       strength += 1;
@@ -40,7 +43,10 @@ function generateRandomFighter(): Fighter {
     } else if (choice === 3 && agility < 8) {
       agility += 1;
       remaining -= 1;
-    } else if (choice === 4 && health < 32) {
+    } else if (choice === 4 && defense < 8) {
+      defense += 1;
+      remaining -= 1;
+    } else if (choice === 5 && health < 32) {
       health += 2;
       remaining -= 1;
     }
@@ -51,6 +57,7 @@ function generateRandomFighter(): Fighter {
     strength,
     speed,
     agility,
+    defense,
     health,
     weapon: weapons[Math.floor(Math.random() * weapons.length)],
   };
@@ -111,23 +118,25 @@ export default function Home() {
       const hitChance =
         attacker.agility / (attacker.agility + defender.agility);
       const didHit = Math.random() < hitChance;
-
       const isCritical = Math.random() < 0.2;
 
-      let damage = 0;
+      let rawDamage = 0;
+      let finalDamage = 0;
 
       if (didHit) {
-        damage = attacker.strength;
+        rawDamage = attacker.strength;
 
         if (isCritical) {
-          damage *= 2;
+          rawDamage *= 2;
         }
+
+        finalDamage = Math.max(1, rawDamage - defender.defense);
       }
 
       if (attacker.name === fighter1.name) {
-        hp2 -= damage;
+        hp2 -= finalDamage;
       } else {
-        hp1 -= damage;
+        hp1 -= finalDamage;
       }
 
       let message = `${attacker.name} attaque ${defender.name} avec ${attacker.weapon}`;
@@ -138,7 +147,11 @@ export default function Home() {
         if (isCritical) {
           message += " 💥 COUP CRITIQUE !";
         }
-        message += ` et inflige ${damage} dégâts.`;
+        message += ` et inflige ${finalDamage} dégâts`;
+        if (defender.defense > 0) {
+          message += ` (${defender.defense} bloqués par l’armure)`;
+        }
+        message += ".";
       }
 
       setLog((prev) => [...prev, message]);
@@ -187,6 +200,7 @@ export default function Home() {
             <p>💪 Force : {fighter1.strength}</p>
             <p>⚡ Vitesse : {fighter1.speed}</p>
             <p>🎯 Agilité : {fighter1.agility}</p>
+            <p>🛡️ Défense : {fighter1.defense}</p>
             <p>❤️ Vie max : {fighter1.health}</p>
 
             <div className="mt-2">
@@ -212,6 +226,7 @@ export default function Home() {
             <p>💪 Force : {fighter2.strength}</p>
             <p>⚡ Vitesse : {fighter2.speed}</p>
             <p>🎯 Agilité : {fighter2.agility}</p>
+            <p>🛡️ Défense : {fighter2.defense}</p>
             <p>❤️ Vie max : {fighter2.health}</p>
 
             <div className="mt-2">
