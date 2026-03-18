@@ -6,6 +6,7 @@ type Fighter = {
   name: string;
   strength: number;
   speed: number;
+  agility: number;
   health: number;
   weapon: string;
 };
@@ -18,16 +19,17 @@ function randomInt(min: number, max: number) {
 }
 
 function generateRandomFighter(): Fighter {
-  const totalPoints = 24;
+  const totalPoints = 28;
 
   let strength = 4;
   let speed = 4;
+  let agility = 4;
   let health = 24;
 
-  let remaining = totalPoints - (strength + speed + health / 2);
+  let remaining = totalPoints - (strength + speed + agility + health / 2);
 
   while (remaining > 0) {
-    const choice = randomInt(1, 3);
+    const choice = randomInt(1, 4);
 
     if (choice === 1 && strength < 8) {
       strength += 1;
@@ -35,7 +37,10 @@ function generateRandomFighter(): Fighter {
     } else if (choice === 2 && speed < 8) {
       speed += 1;
       remaining -= 1;
-    } else if (choice === 3 && health < 32) {
+    } else if (choice === 3 && agility < 8) {
+      agility += 1;
+      remaining -= 1;
+    } else if (choice === 4 && health < 32) {
       health += 2;
       remaining -= 1;
     }
@@ -45,6 +50,7 @@ function generateRandomFighter(): Fighter {
     name: names[Math.floor(Math.random() * names.length)],
     strength,
     speed,
+    agility,
     health,
     weapon: weapons[Math.floor(Math.random() * weapons.length)],
   };
@@ -102,7 +108,21 @@ export default function Home() {
       new Promise((resolve) => setTimeout(resolve, ms));
 
     while (hp1 > 0 && hp2 > 0) {
-      const damage = attacker.strength;
+      const hitChance =
+        attacker.agility / (attacker.agility + defender.agility);
+      const didHit = Math.random() < hitChance;
+
+      const isCritical = Math.random() < 0.2;
+
+      let damage = 0;
+
+      if (didHit) {
+        damage = attacker.strength;
+
+        if (isCritical) {
+          damage *= 2;
+        }
+      }
 
       if (attacker.name === fighter1.name) {
         hp2 -= damage;
@@ -110,10 +130,18 @@ export default function Home() {
         hp1 -= damage;
       }
 
-      setLog((prev) => [
-        ...prev,
-        `${attacker.name} attaque ${defender.name} avec ${attacker.weapon} et inflige ${damage} dégâts.`,
-      ]);
+      let message = `${attacker.name} attaque ${defender.name} avec ${attacker.weapon}`;
+
+      if (!didHit) {
+        message += " mais rate son attaque ❌";
+      } else {
+        if (isCritical) {
+          message += " 💥 COUP CRITIQUE !";
+        }
+        message += ` et inflige ${damage} dégâts.`;
+      }
+
+      setLog((prev) => [...prev, message]);
 
       setCurrentHealth1(Math.max(0, hp1));
       setCurrentHealth2(Math.max(0, hp2));
@@ -131,8 +159,10 @@ export default function Home() {
 
     if (hp1 <= 0) {
       setWinner(fighter2.name);
+      setLog((prev) => [...prev, `${fighter1.name} est vaincu.`]);
     } else if (hp2 <= 0) {
       setWinner(fighter1.name);
+      setLog((prev) => [...prev, `${fighter2.name} est vaincu.`]);
     }
 
     setIsFighting(false);
@@ -156,6 +186,7 @@ export default function Home() {
             <p>⚔️ {fighter1.weapon}</p>
             <p>💪 Force : {fighter1.strength}</p>
             <p>⚡ Vitesse : {fighter1.speed}</p>
+            <p>🎯 Agilité : {fighter1.agility}</p>
             <p>❤️ Vie max : {fighter1.health}</p>
 
             <div className="mt-2">
@@ -180,6 +211,7 @@ export default function Home() {
             <p>⚔️ {fighter2.weapon}</p>
             <p>💪 Force : {fighter2.strength}</p>
             <p>⚡ Vitesse : {fighter2.speed}</p>
+            <p>🎯 Agilité : {fighter2.agility}</p>
             <p>❤️ Vie max : {fighter2.health}</p>
 
             <div className="mt-2">
