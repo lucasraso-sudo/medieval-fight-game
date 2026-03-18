@@ -128,7 +128,19 @@ export default function Home() {
             <p>💪 Force : {fighter1.strength}</p>
             <p>⚡ Vitesse : {fighter1.speed}</p>
             <p>❤️ Vie max : {fighter1.health}</p>
-            <p>🩸 Vie actuelle : {currentHealth1}</p>
+            <div className="mt-2">
+  <div className="mb-1 text-sm">
+    🩸 Vie : {currentHealth1} / {fighter1.health}
+  </div>
+  <div className="h-3 w-full rounded bg-gray-700">
+    <div
+      className="h-3 rounded bg-red-500 transition-all duration-500"
+      style={{
+        width: `${(currentHealth1! / fighter1.health) * 100}%`,
+      }}
+    />
+  </div>
+</div>
           </div>
         )}
 
@@ -139,7 +151,19 @@ export default function Home() {
             <p>💪 Force : {fighter2.strength}</p>
             <p>⚡ Vitesse : {fighter2.speed}</p>
             <p>❤️ Vie max : {fighter2.health}</p>
-            <p>🩸 Vie actuelle : {currentHealth2}</p>
+            <div className="mt-2">
+  <div className="mb-1 text-sm">
+    🩸 Vie : {currentHealth1} / {fighter1.health}
+  </div>
+  <div className="h-3 w-full rounded bg-gray-700">
+    <div
+      className="h-3 rounded bg-red-500 transition-all duration-500"
+      style={{
+        width: `${(currentHealth1! / fighter1.health) * 100}%`,
+      }}
+    />
+  </div>
+</div>
           </div>
         )}
       </div>
