@@ -128,20 +128,20 @@ export default function Home() {
             <p>💪 Force : {fighter1.strength}</p>
             <p>⚡ Vitesse : {fighter1.speed}</p>
             <p>❤️ Vie max : {fighter1.health}</p>
+
             <div className="mt-2">
-  <div className="mt-2">
-  <div className="mb-1 text-sm">
-    🩸 Vie : {currentHealth1 ?? 0} / {fighter1?.health ?? 0}
-  </div>
-  <div className="h-3 w-full rounded bg-gray-700">
-    <div
-      className="h-3 rounded bg-red-500 transition-all duration-500"
-      style={{
-        width: `${((currentHealth1 ?? 0) / (fighter1?.health ?? 1)) * 100}%`,
-      }}
-    />
-  </div>
-</div>
+              <div className="mb-1 text-sm">
+                🩸 Vie : {currentHealth1 ?? 0} / {fighter1.health}
+              </div>
+              <div className="h-3 w-full rounded bg-gray-700">
+                <div
+                  className="h-3 rounded bg-red-500 transition-all duration-500"
+                  style={{
+                    width: `${((currentHealth1 ?? 0) / fighter1.health) * 100}%`,
+                  }}
+                />
+              </div>
+            </div>
           </div>
         )}
 
@@ -152,20 +152,20 @@ export default function Home() {
             <p>💪 Force : {fighter2.strength}</p>
             <p>⚡ Vitesse : {fighter2.speed}</p>
             <p>❤️ Vie max : {fighter2.health}</p>
+
             <div className="mt-2">
-  <div className="mt-2">
-  <div className="mb-1 text-sm">
-    🩸 Vie : {currentHealth2 ?? 0} / {fighter2?.health ?? 0}
-  </div>
-  <div className="h-3 w-full rounded bg-gray-700">
-    <div
-      className="h-3 rounded bg-red-500 transition-all duration-500"
-      style={{
-        width: `${((currentHealth2 ?? 0) / (fighter2?.health ?? 1)) * 100}%`,
-      }}
-    />
-  </div>
-</div>
+              <div className="mb-1 text-sm">
+                🩸 Vie : {currentHealth2 ?? 0} / {fighter2.health}
+              </div>
+              <div className="h-3 w-full rounded bg-gray-700">
+                <div
+                  className="h-3 rounded bg-red-500 transition-all duration-500"
+                  style={{
+                    width: `${((currentHealth2 ?? 0) / fighter2.health) * 100}%`,
+                  }}
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -179,7 +179,9 @@ export default function Home() {
         </button>
       )}
 
-      {winner && <div className="text-2xl font-bold">🏆 Vainqueur : {winner}</div>}
+      {winner && (
+        <div className="text-2xl font-bold">🏆 Vainqueur : {winner}</div>
+      )}
 
       {log.length > 0 && (
         <div className="w-full max-w-3xl rounded-xl border border-white/20 p-4">
